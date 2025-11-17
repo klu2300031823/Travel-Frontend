@@ -1,8 +1,8 @@
-name: Deploy Vite React App to GitHub Pages
+name: Deploy static site to GitHub Pages
 
 on:
   push:
-    branches: ["master"]   # or "main" if your default branch is main
+    branches: ["master"]     # or "main"
   workflow_dispatch:
 
 permissions:
@@ -15,35 +15,24 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install Dependencies
-        run: npm install
-
-      - name: Build Vite App
-        run: npm run build
-
-      - name: Upload Build Artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./dist
-
   deploy:
-    needs: build
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
+
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload site files
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'   # upload everything (HTML, JS, CSS)
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
